@@ -13,6 +13,13 @@
     type: Phaser.AUTO,
     width: 625,
     height: 475,
+    physics: {
+      default: 'arcade' ,
+      arcade: {
+        gravity: { y: 300 },
+        debug:false
+      }
+    },
     scene: {
         preload: preload,
         create: create,
@@ -21,16 +28,24 @@
 };
 
   var game = new Phaser.Game(config);
+  var platforms;
 
   function preload ()
   {
-    this.load.image('primaryWorldBoard', 'assets/worldBoard.png');
+    this.load.image('worldBoardBack', 'assets/parallax-forest-back-trees.png');
+    this.load.image('worldBoardFront', 'assets/parallax-forest-front-trees.png');
     this.load.image('heroName', 'assets/heroChar.png');
   }
 
   function create ()
   {
-    this.add.image(0, 0, 'primaryWorldBoard').setOrigin(0,0);
+    this.add.image(0, 0, 'worldBoardBack').setOrigin(0,0);
+    this.add.image(0, 0, 'worldBoardFront').setOrigin(0,0);
+
+    platforms = this.physics.add.staticGroup();
+
+    platforms.create(325, 305, 'primaryWorldBoard');
+
     this.add.image(325, 305, 'heroName').setOrigin(0,0);
   }
 
