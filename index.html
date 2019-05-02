@@ -11,13 +11,13 @@
     //python -m SimpleHTTPServer 3000 <-- write this in terminal for local host
   var config = {
     type: Phaser.AUTO,
-    width: 625,
-    height: 475,
+    width: 1200,
+    height: 450,
     physics: {
-      default: 'arcade' ,
+      default: 'arcade',
       arcade: {
         gravity: { y: 300 },
-        debug:false
+        debug: false
       }
     },
     scene: {
@@ -26,30 +26,33 @@
         update: update
     }
 };
-
   var game = new Phaser.Game(config);
   var platforms;
 
-  function preload ()
+  function preload () //load all your images videos
   {
-    this.load.image('worldBoardBack', 'assets/parallax-forest-back-trees.png');
-    this.load.image('worldBoardFront', 'assets/parallax-forest-front-trees.png');
-    this.load.image('heroName', 'assets/heroChar.png');
+    this.load.image('mountScene', 'Assets/mountainScene.png');
+    this.load.image('heroName', 'Assets/heroChar.png');
+    this.load.image('pltfrm1', 'Assets/platform1.png');
   }
 
-  function create ()
+  function create () //displaying images, graphics, videos
   {
-    this.add.image(0, 0, 'worldBoardBack').setOrigin(0,0);
-    this.add.image(0, 0, 'worldBoardFront').setOrigin(0,0);
+    this.add.image(0, 0, 'mountScene').setOrigin(0,0);
+    this.add.image(325, 305, 'heroName').setOrigin(0,0);
 
+    //static = does not move
+    //dynamic = does move
     platforms = this.physics.add.staticGroup();
 
-    platforms.create(325, 305, 'primaryWorldBoard');
+    platforms.create(300, 368, 'pltfrm1').setScale(1).refreshBody();
 
-    this.add.image(325, 305, 'heroName').setOrigin(0,0);
+    player = this.physics.add.sprite(300,0, 'heroName');
+
+    platforms.create(250, 200, 'pltfrm1');
   }
 
-  function update ()
+  function update () //interaction
   {
   }
     </script>
