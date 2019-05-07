@@ -45,7 +45,7 @@
 
     //static = does not move
     //dynamic = does move
-    platforms = this.add.physicsGroup();
+    platforms = this.physics.add.staticGroup();
     platforms.create(300, 410, 'pltfrm1').setScale(1).refreshBody();
     platforms.create(-190,330, 'pltfrm1').setOrigin(0,0);
     platforms.create(-80,330, 'pltfrm1').setOrigin(0,0);
