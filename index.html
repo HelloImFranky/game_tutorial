@@ -26,69 +26,91 @@
         update: update
     }
 };
-  var game = new Phaser.Game(config);
-  var platforms;
-  var player;
-  function preload () //load all your images videos
-  {
-    this.load.image('mountScene', 'Assets/parallax-mountain-bg.png');
-    this.load.spritesheet('heroName', 'Assets/maleBase/full/ninja_full1.png',
-  {frameWidth: 32 , frameHeight: 64});
-    this.load.image('pltfrm1', 'Assets/platform1.png');
-  }
+var game = new Phaser.Game(config);
+var platforms;
+var player;
+var relics;
+var score = 0;
+var scoreText;
 
-  function create () //displaying images, graphics, videos
-  {
+function preload () //load all your images videos
+{
+  this.load.image('mountScene', 'Assets/parallax-mountain-bg.png');
+  this.load.image('pltfrm1', 'Assets/platform1.png');
+  this.load.spritesheet('heroName', 'Assets/maleBase/full/ninja_full1.png', {frameWidth: 32 , frameHeight: 64});
+  this.load.spritesheet('runeEye', 'Assets/Runes1.png', {frameWidth: 60, frameHeight: 60});
+}
 
+function create () //displaying images, graphics, videos
+{
+    //adds mountain scene
     this.add.image(0, 0, 'mountScene').setOrigin(0,0);
 
+    //adds score score
+  scoreText = this.add.text(16,16, 'READY?!', {fontSize: '35px', fill: '#000', fontFamily: 'Comic Sans'});
     //static = does not move
     //dynamic = does move
-    platforms = this.physics.add.staticGroup();
-    platforms.create(300, 410, 'pltfrm1').setScale(1).refreshBody();
-    platforms.create(-190,328, 'pltfrm1').setOrigin(0,0);
-    platforms.create(-80,328, 'pltfrm1').setOrigin(0,0);
-    platforms.create(20, 328, 'pltfrm1').setOrigin(0,0);
-    platforms.create(100,328, 'pltfrm1').setOrigin(0,0);
-    platforms.create(200, 328, 'pltfrm1').setOrigin(0,0);
-    platforms.create(290, 328, 'pltfrm1').setOrigin(0,0);
-    platforms.create(380, 328, 'pltfrm1').setOrigin(0,0);
-    platforms.create(480, 328, 'pltfrm1').setOrigin(0,0);
+  platforms = this.physics.add.staticGroup();
+    //Below creates the floor
+    platforms.create(2, 465, 'pltfrm1').setOrigin(0,0).setScale(3).refreshBody();
+    // platforms.create(-190,400, 'pltfrm1').setOrigin(0,0);
+    // platforms.create(-80,400, 'pltfrm1').setOrigin(0,0);
+    // platforms.create(20, 400, 'pltfrm1').setOrigin(0,0);
+    // platforms.create(100,400, 'pltfrm1').setOrigin(0,0);
+    // platforms.create(200, 400, 'pltfrm1').setOrigin(0,0);
+    // platforms.create(290, 400, 'pltfrm1').setOrigin(0,0);
+    // platforms.create(380, 400, 'pltfrm1').setOrigin(0,0);
+    // platforms.create(480, 400, 'pltfrm1').setOrigin(0,0);
 
 
 
 
-    player = this.physics.add.sprite(325, 305, 'heroName');
-    player.setBounce(0.2);
+  player = this.physics.add.sprite(325, 100, 'heroName');
     player.setCollideWorldBounds(true);
-    player.body.setGravityY(300);
+    player.body.setGravityY(200);
 
 
     this.anims.create({
       key: 'left',
-      frames: this.anims.generateFrameNumbers('heroName', {start: 9, end: -9}),
+      frames: this.anims.generateFrameNumbers('heroName', {start: 3, end: 9}),
       frameRate: 10,
       repeat: -1
-    });
-//
-//     this.anims.create({
-//     key: 'turn',
-//     frames: [ { key: 'heroName', frame: 9 } ],
-//     frameRate: 20
-// });
-//
-//     this.anims.create({
-//     key: 'right',
-//     frames: this.anims.generateFrameNumbers('heroName', { start: 11, end: 20 }),
-//     frameRate: 10,
-//     repeat: -1
-// });
-//   this.anims.create({
-//     key: 'up',
-//     frames: this.anims.generateFrameNumbers('heroName', {start :21 , end:23 }),
-//     frameRate: 10,
-//     repeat: -1
-//   });
+  });
+    this.anims.create({
+      key: 'right',
+      frames: this.anims.generateFrameNumbers('heroName', { start: 10, end: 16 }),
+      frameRate: 10,
+      repeat: -1
+  });
+    this.anims.create({
+      key: 'turn',
+      frames: [{key: 'heroName', frame: 10 }],
+      frameRate: 20
+  });
+    this.anims.create({
+      key: 'up',
+      frames: this.anims.generateFrameNumbers('heroName', { start: 10, end: 15 }),
+      frameRate: 20
+  });
+
+  relics = this.physics.add.group({
+    key: 'runeEye',
+    repeat: 11,
+    setXY: { x: 12, y: 0, stepX: 70 }
+  });
+
+  relics.children.iterate(function (child){
+  child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+});
+
+  this.physics.add.collider(relics, platforms);
+  this.physics.add.overlap(player, relics, collectRelics, null, this);
+  function collectRelics(player, relics){
+    relics.disableBody(true, true);
+
+    score += 10;
+    scoreText.setText('Score: ' + score);
+  }
   this.physics.add.collider(player, platforms);
 }
   function update () //interaction
@@ -98,18 +120,20 @@
       player.setVelocityX(-160);
       player.anims.play('left', true);
     }
-    // else if (cursors.right.isDown) {
-    //   player.setVelocityX(160);
-    //   player.anims.play('right', true);
-    // }
-    // else {
-    //   player.setVelocityX(0);
-    //   player.anims.play('turn', true);
-    // }
-    // if (cursors.up.isDown && player.body.touching.down){
-    //   player.setVelocityY(-300);
-    // }
-  }
+    else if (cursors.right.isDown) {
+      player.setVelocityX(160);
+      player.anims.play('right', true);
+    }
+    else {
+      player.setVelocityX(0);
+      player.anims.play('turn', true);
+    }
+    if (cursors.up.isDown && player.body.touching.down){
+      player.setVelocityY(-300);
+      player.anims.play('up');
+    }
+
+    }
     </script>
   </body>
 </html>
