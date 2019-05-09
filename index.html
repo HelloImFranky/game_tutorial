@@ -119,7 +119,7 @@ function create () //displaying images, graphics, videos
     this.physics.add.collider(enemyStar, platforms);
     this.physics.add.collider(player, enemyStar, hitStar, null, this);
 
-    function hitStar (player, enemyStar) {
+    function hitStar (player, theEnemyStar) {
       this.physics.pause();
       player.setTint(0xff0000);
       player.anims.play('turn');
@@ -140,10 +140,10 @@ function create () //displaying images, graphics, videos
 
       var x = (player.x < 400) ? Phaser.Math.Between(400,800) : Phaser.Math.Between(0,400);
 //creates enemyStar variable
-      var enemyStar = enemyStar.create(x, 16, 'enemyStar');
-      enemyStar.setBounce(1);
-      enemyStar.setCollideWorldBounds(true);
-      enemyStar.setVelocity(Phaser.Math.Between(-200, 200), 20);
+      var theEnemyStar = enemyStar.create(x, 16, 'enemyStar');
+      theEnemyStar.setBounce(1);
+      theEnemyStar.setCollideWorldBounds(true);
+      theEnemyStar.setVelocity(Phaser.Math.Between(-200, 200), 20);
     }
   }
 
