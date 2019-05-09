@@ -37,19 +37,24 @@ function preload () //load all your images videos
 {
   this.load.image('mountScene', 'Assets/parallax-mountain-bg.png');
   this.load.image('pltfrm1', 'Assets/platform1.png');
-  this.load.spritesheet('heroName', 'Assets/maleBase/full/ninja_full1.png', {frameWidth: 32 , frameHeight: 64});
-  this.load.spritesheet('runeEye', 'Assets/Runes1.png', {frameWidth: 60, frameHeight: 60});
+  this.load.spritesheet('heroName', 'Assets/maleBase/full/ninja_full1.png',
+  {frameWidth: 32 , frameHeight: 64});
+  this.load.spritesheet('runeEye', 'Assets/Runes1.png',
+  {frameWidth: 60, frameHeight: 60});
+  this.load.image('enemyStar', 'Assets/trueNinjaStar.png');
 }
 
 function create () //displaying images, graphics, videos
 {
-    //adds mountain scene
+//adds mountain scene
     this.add.image(0, 0, 'mountScene').setOrigin(0,0);
 
-    //adds score score
-  scoreText = this.add.text(16,16, 'READY?!', {fontSize: '35px', fill: '#000', fontFamily: 'Comic Sans'});
-    //static = does not move
-    //dynamic = does move
+//adds score score
+  scoreText = this.add.text(16,16, 'Dodge the ninja stars, collect the runes!',
+  {fontSize: '35px', fill: '#000', fontFamily: 'Comic Sans'});
+
+//static = does not move
+//dynamic = does move
   platforms = this.physics.add.staticGroup();
     //Below creates the floor
     platforms.create(2, 465, 'pltfrm1').setOrigin(0,0).setScale(3).refreshBody();
@@ -64,12 +69,12 @@ function create () //displaying images, graphics, videos
 
 
 
-
+//this is the ninja
   player = this.physics.add.sprite(325, 100, 'heroName');
     player.setCollideWorldBounds(true);
     player.body.setGravityY(200);
 
-
+//Some cursor controls for the ninja
     this.anims.create({
       key: 'left',
       frames: this.anims.generateFrameNumbers('heroName', {start: 3, end: 9}),
@@ -84,7 +89,7 @@ function create () //displaying images, graphics, videos
   });
     this.anims.create({
       key: 'turn',
-      frames: [{key: 'heroName', frame: 10 }],
+      frames: [{key: 'heroName', frame: 1 }],
       frameRate: 20
   });
     this.anims.create({
@@ -93,6 +98,8 @@ function create () //displaying images, graphics, videos
       frameRate: 20
   });
 
+    this.physics.add.collider(player, platforms);
+// this is the runes named relics (probably a bad idea to name it this way)
   relics = this.physics.add.group({
     key: 'runeEye',
     repeat: 11,
@@ -104,14 +111,42 @@ function create () //displaying images, graphics, videos
 });
 
   this.physics.add.collider(relics, platforms);
+
   this.physics.add.overlap(player, relics, collectRelics, null, this);
+
+// this is a throwing star bomb code
+  enemyStar = this.physics.add.group();
+    this.physics.add.collider(enemyStar, platforms);
+    this.physics.add.collider(player, enemyStar, hitStar, null, this);
+
+    function hitStar (player, enemyStar) {
+      this.physics.pause();
+      player.setTint(0xff0000);
+      player.anims.play('turn');
+      gameOver = true;
+          }
+//function to collect relics
   function collectRelics(player, relics){
     relics.disableBody(true, true);
 
     score += 10;
+
     scoreText.setText('Score: ' + score);
+
+    if (relics.countActive(true) === 0) {
+      relics.children.iterate(function (child) {
+        child.enableBody(true, child.x, 0, true, true);
+      });
+
+      var x = (player.x < 400) ? Phaser.Math.Between(400,800) : Phaser.Math.Between(0,400);
+//creates enemyStar variable
+      var enemyStar = enemyStar.create(x, 16, 'enemyStar');
+      enemyStar.setBounce(1);
+      enemyStar.setCollideWorldBounds(true);
+      enemyStar.setVelocity(Phaser.Math.Between(-200, 200), 20);
+    }
   }
-  this.physics.add.collider(player, platforms);
+
 }
   function update () //interaction
   {
@@ -132,7 +167,6 @@ function create () //displaying images, graphics, videos
       player.setVelocityY(-300);
       player.anims.play('up');
     }
-
     }
     </script>
   </body>
